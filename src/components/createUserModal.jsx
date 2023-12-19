@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
 import {
   addDoc,
   collection,
@@ -10,53 +10,46 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const CreateUserModal = ({ show, hide, quizID }) => {
   const [fullName, setFullName] = useState("");
-  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleFullNameChange = (e) => setFullName(e.target.value);
-  const handleUserNameChange = (e) => setUserName(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
   const handleSubmit = async () => {
-    // Check if any of the fields are empty
-    if (!fullName || !userName || !password) {
-      console.error("Please fill in all fields");
-      toast.error("Please fill in all fields");
-      return;
-    }
-
     try {
-      // Add logic for handling form submission (e.g., storing data in Firebase).
-      const userDocRef = await addDoc(collection(db, "users"), {
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const { uid } = user;
+
+      await addDoc(collection(db, "users"), {
+        uid,
         fullName,
-        userName,
-        password,
+        email,
         role: "user",
         createdAt: serverTimestamp(),
       });
 
-      console.log("Document written with ID: ", userDocRef.id);
-
-      // Clear form data after successful submission
       setFullName("");
-      setUserName("");
+      setEmail("");
       setPassword("");
 
-      // Close the modal after submitting
       hide();
 
-      // Show success toast
       toast.success("User created successfully!");
     } catch (error) {
-      console.error("Error adding document: ", error);
-      // Show error toast
+      console.error("Error signing up: ", error);
       toast.error("Error creating user. Please try again.");
     }
   };
-
   return (
     <Modal style={{ zIndex: 2000 }} show={show} onHide={hide}>
       <Modal.Header closeButton>
@@ -75,12 +68,12 @@ const CreateUserModal = ({ show, hide, quizID }) => {
           </Form.Group>
 
           <Form.Group controlId="formUserName">
-            <Form.Label>User Name</Form.Label>
+            <Form.Label>Email</Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter your user name"
-              value={userName}
-              onChange={handleUserNameChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </Form.Group>
 

@@ -1,41 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../../firebase";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
   // State variables for username and password
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [users, setUsers] = useState([]);
 
   const navigation = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+      const usersData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUsers(usersData);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const getUser = (id) => {
+    const user = users.filter((user) => {
+      if (user.uid == id) {
+        return user;
+      }
+    });
+    return user[0];
+  };
 
   // Function to handle form submission
   const handleLogin = async (event) => {
     try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const users = querySnapshot.docs.map((doc) => doc.data());
-
-      // Check if the provided username and password match any entry in the "users" collection
-      const user = users.find(
-        (user) => user.userName === username && user.password === password
+      const { user } = await signInWithEmailAndPassword(
+        auth,
+        username,
+        password
       );
 
+      console.log(user);
+
       if (user) {
-        if (user.role == "user") {
-          navigation("/take-quiz");
+        const userData = getUser(user.uid);
+        if (userData !== undefined) {
+          if (userData.role == "user") {
+            navigation("/take-quiz");
+          }
         } else {
           navigation("/create-quiz");
         }
       } else {
         toast.error("Invalid username or password");
-        // Handle invalid login (e.g., show an error message)
       }
     } catch (error) {
-      console.error("Error fetching users: ", error);
-      // Handle error (e.g., show an error message)
+      console.log(error);
+      toast.error("Invalid Email or Password");
     }
   };
 
@@ -50,7 +75,7 @@ const Login = () => {
           style={{ width: "100%", height: "5px" }}
         ></div>
         <Form.Group controlId="username">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
             name="username"

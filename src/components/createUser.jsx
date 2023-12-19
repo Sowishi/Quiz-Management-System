@@ -26,7 +26,7 @@ const CreateUser = () => {
     });
 
     return () => unsubscribe();
-  }, []); // T
+  }, []);
 
   const deleteUser = (id) => {
     const userDoc = doc(db, "users", id);
@@ -59,7 +59,7 @@ const CreateUser = () => {
               <tr>
                 <th>#</th>
                 <th>Full Name</th>
-                <th>Username</th>
+                <th>Email</th>
                 <th>Date Created</th>
                 <th>Action</th>
               </tr>
@@ -71,7 +71,7 @@ const CreateUser = () => {
                     <tr key={index}>
                       <th>{index + 1}</th>
                       <th>{user.fullName}</th>
-                      <th>{user.userName}</th>
+                      <th>{user.email}</th>
                       <th>{Date(user.createdAt).substring(0, 25)}</th>
                       <th>
                         <Button

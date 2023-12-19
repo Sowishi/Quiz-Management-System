@@ -53,12 +53,10 @@ const TakeQuiz = () => {
           <div className="row">
             {quizzes.length <= 0 && (
               <>
-                <div className="w-100 d-flex justify-content-center align-items-center">
-                  <Spinner animation="border" />
-                </div>
+                <h5>No quizzes yet!</h5>
               </>
             )}
-            {quizzes &&
+            {quizzes ? (
               quizzes.map((quiz) => {
                 return (
                   <div className="col-md-4 my-3" key={quiz.id}>
@@ -81,7 +79,12 @@ const TakeQuiz = () => {
                     </Card>
                   </div>
                 );
-              })}
+              })
+            ) : (
+              <div className="w-100 d-flex justify-content-center align-items-center">
+                <Spinner animation="border" />
+              </div>
+            )}
           </div>
         </div>
       </div>
