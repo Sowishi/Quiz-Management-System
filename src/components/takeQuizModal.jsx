@@ -7,6 +7,7 @@ import {
   doc,
   getDoc,
   onSnapshot,
+  serverTimestamp,
   setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
@@ -19,6 +20,28 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
   const [scoreModal, setScoreModal] = useState(false);
   const [score, setScore] = useState(null);
   const [disable, setDisable] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+      const usersData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUsers(usersData);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const getUser = (id) => {
+    const user = users.filter((user) => {
+      if (user.uid == id) {
+        return user;
+      }
+    });
+    return user[0];
+  };
 
   useEffect(() => {
     const questionRef = collection(db, "questions", quiz.id, "allQuestions");
@@ -34,7 +57,7 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
     alreadyTake(quiz.id);
   }, [quiz]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let score = 0;
 
     for (let i = 0; i < questions.length; i++) {
@@ -44,13 +67,17 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
     }
 
     const scoresRef = doc(db, "scores", quiz.id, "users", auth.currentUser.uid);
+    const userData = await getUser(auth.currentUser.uid);
 
     try {
       setScore(score);
       setScoreModal(true);
       setDoc(scoresRef, {
         user: auth.currentUser.uid,
+        userData,
         score,
+        questionsLength: questions.length,
+        createdAt: serverTimestamp(),
       });
     } catch (error) {
       toast.error(error.toString());

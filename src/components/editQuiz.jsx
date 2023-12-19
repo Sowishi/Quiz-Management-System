@@ -3,10 +3,12 @@ import AddQuestion from "./addQuestion";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
+import ScoresModal from "./scoresModal";
 
 const EditQuiz = ({ show, hide, quiz }) => {
   const [addQuestion, setAddQuestion] = useState(false);
   const [questions, setQuestions] = useState([]);
+  const [scoresModal, setScoresModal] = useState(false);
 
   useEffect(() => {
     const questionRef = collection(db, "questions", quiz.id, "allQuestions");
@@ -27,6 +29,12 @@ const EditQuiz = ({ show, hide, quiz }) => {
         show={addQuestion}
         hide={() => setAddQuestion(false)}
       />
+
+      <ScoresModal
+        show={scoresModal}
+        hide={() => setScoresModal(false)}
+        quiz={quiz}
+      />
       <Modal
         backdrop="static"
         keyboard={false}
@@ -44,13 +52,21 @@ const EditQuiz = ({ show, hide, quiz }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="w-100 d-flex justify-content-end align-items-center">
+          <div className="w-100 d-flex justify-content-end align-items-center my-3">
             <button
               onClick={() => setAddQuestion(true)}
               type="button"
               class="btn btn-success"
             >
               Add Question!
+            </button>
+
+            <button
+              onClick={() => setScoresModal(true)}
+              type="button"
+              class="btn btn-warning mx-2"
+            >
+              View Student Scores
             </button>
           </div>
           <div className="row">

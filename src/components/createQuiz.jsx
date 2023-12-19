@@ -12,6 +12,7 @@ import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import EditQuiz from "./editQuiz";
+import ScoresModal from "./scoresModal";
 
 const CreateQuiz = () => {
   const quizzesRef = collection(db, "quizzes");
