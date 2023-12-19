@@ -6,6 +6,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   onSnapshot,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";

@@ -5,6 +5,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   onSnapshot,
   setDoc,
 } from "firebase/firestore";
@@ -17,6 +18,7 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
   const [userInput, setUserInput] = useState([]);
   const [scoreModal, setScoreModal] = useState(false);
   const [score, setScore] = useState(null);
+  const [disable, setDisable] = useState(false);
 
   useEffect(() => {
     const questionRef = collection(db, "questions", quiz.id, "allQuestions");
@@ -29,6 +31,7 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
       setQuestions(output);
       setUserInput(output);
     });
+    alreadyTake(quiz.id);
   }, [quiz]);
 
   const handleSubmit = () => {
@@ -56,9 +59,20 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
 
   const letters = ["A", "B", "C", "D"];
 
+  const alreadyTake = async (quizID) => {
+    const docRef = doc(db, "scores", quizID, "users", auth.currentUser.uid);
+    const docSnapshot = await getDoc(docRef);
+
+    if (docSnapshot.exists()) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  };
+
   return (
     <>
-      {questions && score && (
+      {questions && (
         <ScoreModal
           show={scoreModal}
           hide={() => {
@@ -159,7 +173,12 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
         </Modal.Body>
         <Modal.Footer>
           <div className="w-100">
-            <Button onClick={handleSubmit} className="w-100" variant="success">
+            <Button
+              disabled={disable}
+              onClick={handleSubmit}
+              className="w-100"
+              variant="success"
+            >
               Finish
             </Button>
           </div>
