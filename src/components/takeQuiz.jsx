@@ -8,7 +8,7 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
 import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
 import TakeQuizModal from "./takeQuizModal";

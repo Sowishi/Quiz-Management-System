@@ -1,12 +1,22 @@
 import { Modal, Button, Form } from "react-bootstrap";
 import AddQuestion from "./addQuestion";
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../firebase";
+import {
+  addDoc,
+  collection,
+  doc,
+  onSnapshot,
+  setDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../firebase";
+import { toast } from "react-toastify";
+import ScoreModal from "./scoreModal";
 
 const TakeQuizModal = ({ show, hide, quiz }) => {
   const [questions, setQuestions] = useState([]);
   const [userInput, setUserInput] = useState([]);
+  const [scoreModal, setScoreModal] = useState(false);
+  const [score, setScore] = useState(null);
 
   useEffect(() => {
     const questionRef = collection(db, "questions", quiz.id, "allQuestions");
@@ -29,13 +39,35 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
         score += 1;
       }
     }
-    console.log(score);
+
+    const scoresRef = doc(db, "scores", quiz.id, "users", auth.currentUser.uid);
+
+    try {
+      setScore(score);
+      setScoreModal(true);
+      setDoc(scoresRef, {
+        user: auth.currentUser.uid,
+        score,
+      });
+    } catch (error) {
+      toast.error(error.toString());
+    }
   };
 
   const letters = ["A", "B", "C", "D"];
 
   return (
     <>
+      {questions && score && (
+        <ScoreModal
+          show={scoreModal}
+          hide={() => {
+            hide();
+          }}
+          score={score}
+          questionLength={questions.length}
+        />
+      )}
       <Modal
         backdrop="static"
         keyboard={false}
