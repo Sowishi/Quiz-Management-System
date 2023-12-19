@@ -152,7 +152,7 @@ const CreateQuiz = () => {
             {quizzes &&
               quizzes.map((quiz) => {
                 return (
-                  <div className="col-md-4" key={quiz.id}>
+                  <div className="col-md-4 my-3" key={quiz.id}>
                     <Card style={{ background: quiz.bgColor }}>
                       <Card.Body>
                         <Card.Title>{quiz.quizTitle}</Card.Title>

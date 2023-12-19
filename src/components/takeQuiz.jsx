@@ -11,12 +11,14 @@ import {
 import { db } from "../../firebase";
 import { toast } from "react-toastify";
 import Spinner from "react-bootstrap/Spinner";
-import EditQuiz from "./editQuiz";
+import TakeQuizModal from "./takeQuizModal";
 
 const TakeQuiz = () => {
   const quizzesRef = collection(db, "quizzes");
 
   const [quizzes, setQuizzes] = useState([]);
+  const [SelectedQuiz, setSelectedQuiz] = useState();
+  const [takeQuizModal, setTakeQuizModal] = useState(false);
 
   useEffect(() => {
     onSnapshot(quizzesRef, (snapshot) => {
@@ -31,6 +33,14 @@ const TakeQuiz = () => {
 
   return (
     <Layout user={true}>
+      {SelectedQuiz && (
+        <TakeQuizModal
+          quiz={SelectedQuiz}
+          show={takeQuizModal}
+          hide={() => setSelectedQuiz(false)}
+        />
+      )}
+
       <div className="container-fluid my-3">
         {/* Other content */}
         <div className="container my-5">
@@ -51,26 +61,20 @@ const TakeQuiz = () => {
             {quizzes &&
               quizzes.map((quiz) => {
                 return (
-                  <div className="col-md-4" key={quiz.id}>
+                  <div className="col-md-4 my-3" key={quiz.id}>
                     <Card style={{ background: quiz.bgColor }}>
                       <Card.Body>
                         <Card.Title>{quiz.quizTitle}</Card.Title>
                         <Card.Text>{quiz.description}</Card.Text>
-                        <div className="w-100 d-flex justify-content-around align-items-center">
+                        <div className="w-100 ">
                           <Button
                             onClick={() => {
-                              setEditQuiz(true);
                               setSelectedQuiz(quiz);
+                              setTakeQuizModal(true);
                             }}
                             variant="primary"
                           >
-                            View Quiz ➕
-                          </Button>
-                          <Button
-                            variant="danger"
-                            onClick={() => handleDeleteQuiz(quiz.id)}
-                          >
-                            Delete 🗑️
+                            Take Quiz
                           </Button>
                         </div>
                       </Card.Body>
