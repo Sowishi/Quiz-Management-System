@@ -1,4 +1,4 @@
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import AddQuestion from "./addQuestion";
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
@@ -52,6 +52,45 @@ const EditQuiz = ({ show, hide, quiz }) => {
             >
               Add Question!
             </button>
+          </div>
+          <div className="row">
+            {questions &&
+              questions.map((question, index) => {
+                const choices = JSON.parse(question.choices);
+                return (
+                  <div className="col-md-4">
+                    <Form>
+                      <Form.Group controlId="questionTextArea">
+                        <Form.Label>Question #{index + 1}</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={3}
+                          value={question.question}
+                        />
+                      </Form.Group>
+
+                      <div className="row">
+                        {[0, 1, 2, 3].map((index) => (
+                          <div key={index} className="col-md-6">
+                            <Form.Group controlId={`choice${index}`}>
+                              <Form.Label>{`Choice ${index + 1}`}</Form.Label>
+                              <Form.Control
+                                type="text"
+                                value={choices[index]}
+                                className={`${
+                                  question.correctAnswer == choices[index]
+                                    ? "bg-success text-white"
+                                    : ""
+                                }`}
+                              />
+                            </Form.Group>
+                          </div>
+                        ))}
+                      </div>
+                    </Form>
+                  </div>
+                );
+              })}
           </div>
         </Modal.Body>
         <Modal.Footer>

@@ -18,12 +18,17 @@ const Layout = ({ children }) => {
                 </Link>
               </Nav.Item>
               <Nav.Item>
-                <Link className="text-white nav-link" to={"/take"}>
+                <Link className="text-white nav-link" to={"/take-quiz"}>
                   Take Quiz
                 </Link>
               </Nav.Item>
               <Nav.Item>
-                <Link className="text-white nav-link" to={"/take"}>
+                <Link className="text-white nav-link" to={"/create-user"}>
+                  Users Mangement
+                </Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Link className="text-white nav-link" to={"/"}>
                   Log Out
                 </Link>
               </Nav.Item>

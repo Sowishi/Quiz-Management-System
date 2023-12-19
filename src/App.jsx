@@ -8,6 +8,8 @@ import CreateQuiz from "./components/createQuiz";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditQuiz from "./components/editQuiz";
+import TakeQuiz from "./components/takeQuiz";
+import CreateUser from "./components/createUser";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
+          <Route path="/take-quiz" element={<TakeQuiz />} />
+          <Route path="/create-user" element={<CreateUser />} />
         </Routes>
       </Router>
       <ToastContainer
