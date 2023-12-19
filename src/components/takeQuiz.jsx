@@ -30,7 +30,7 @@ const TakeQuiz = () => {
   }, []);
 
   return (
-    <Layout>
+    <Layout user={true}>
       <div className="container-fluid my-3">
         {/* Other content */}
         <div className="container my-5">

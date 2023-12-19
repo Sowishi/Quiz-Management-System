@@ -44,7 +44,7 @@ const CreateUser = () => {
 
       <div className="container-fluid my-5">
         <div className="row mx-3">
-          <div className="col-12 d-flex justify-content-end align-items-center">
+          <div className="col-12 d-flex justify-content-end align-items-center my-3">
             <Button
               variant="success px-3 py-2"
               onClick={() => setUserModal(true)}
@@ -57,6 +57,7 @@ const CreateUser = () => {
           <Table striped bordered hover>
             <thead>
               <tr>
+                <th>#</th>
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Date Created</th>
@@ -68,6 +69,7 @@ const CreateUser = () => {
                 users.map((user, index) => {
                   return (
                     <tr key={index}>
+                      <th>{index + 1}</th>
                       <th>{user.fullName}</th>
                       <th>{user.userName}</th>
                       <th>{Date(user.createdAt).substring(0, 25)}</th>
