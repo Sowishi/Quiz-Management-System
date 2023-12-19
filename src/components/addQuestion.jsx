@@ -76,9 +76,9 @@ const AddQuestion = ({ show, hide, quizID }) => {
             <Form.Label>Correct Answer</Form.Label>
             <Form.Control
               as="select"
-              value={correctAnswer}
               onChange={(e) => handleCorrectAnswerChange(e.target.value)}
             >
+              <option value="">Please select correct answer</option>
               {choices.map((choice, index) => (
                 <option key={index} value={choice}>
                   {`Choice ${index + 1}`}

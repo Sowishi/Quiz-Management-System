@@ -17,17 +17,22 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
         output.push(data);
       });
       setQuestions(output);
+      setUserInput(output);
     });
   }, [quiz]);
 
-  function areObjectsEqual(obj1, obj2) {
-    // Convert objects to JSON strings and compare them
-    const str1 = JSON.stringify(obj1);
-    const str2 = JSON.stringify(obj2);
-    return str1 === str2;
-  }
+  const handleSubmit = () => {
+    let score = 0;
 
-  console.log(userInput);
+    for (let i = 0; i < questions.length; i++) {
+      if (questions[i].correctAnswer == userInput[i].correctAnswer) {
+        score += 1;
+      }
+    }
+    console.log(score);
+  };
+
+  const letters = ["A", "B", "C", "D"];
 
   return (
     <>
@@ -71,34 +76,48 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
                       </Form.Group>
 
                       <div className="row">
-                        {[0, 1, 2, 3].map((index) => (
-                          <div key={index} className="col-md-6">
-                            <Form.Group controlId={`choice${index}`}>
-                              <Form.Label>{`Choice ${index + 1}`}</Form.Label>
-                              <Form.Control
-                                type="text"
-                                value={choices[index]}
-                                style={{ cursor: "pointer" }}
-                                onClick={() => {
-                                  const copy = { ...question };
-                                  copy.correctAnswer = choices[index];
-
-                                  const isQuizIdInUserInput = userInput.some(
-                                    (item) => item.id === copy.id
-                                  );
-
-                                  if (!isQuizIdInUserInput) {
-                                    // If not present, add it to userInput array
-                                    setUserInput((prevUserInput) => [
-                                      ...prevUserInput,
-                                      copy,
-                                    ]);
-                                  }
-                                }}
-                              />
-                            </Form.Group>
-                          </div>
-                        ))}
+                        {choices.map((choice, index) => {
+                          return (
+                            <div key={index} className="col-md-6 ">
+                              <Form.Group controlId={`choice${index}`}>
+                                <Form.Label>Letter {letters[index]}</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  value={choice}
+                                  style={{ cursor: "pointer" }}
+                                  disabled
+                                />
+                              </Form.Group>
+                            </div>
+                          );
+                        })}
+                        <Form.Group controlId="correctAnswerSelect">
+                          <Form.Label>Correct Answer</Form.Label>
+                          <Form.Control
+                            as="select"
+                            onChange={(e) => {
+                              const userInputCopy = userInput.map((input) => ({
+                                ...input,
+                              }));
+                              const res = userInputCopy.map((input) => {
+                                if (question.id === input.id) {
+                                  input.correctAnswer = e.target.value;
+                                }
+                                return input;
+                              });
+                              setUserInput(res);
+                            }}
+                          >
+                            <option value="">
+                              Please select correct answer
+                            </option>
+                            {choices.map((choice, index) => (
+                              <option key={index} value={choice}>
+                                {choice}
+                              </option>
+                            ))}
+                          </Form.Control>
+                        </Form.Group>
                       </div>
                     </Form>
                   </div>
@@ -107,7 +126,11 @@ const TakeQuizModal = ({ show, hide, quiz }) => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={hide}>Close</Button>
+          <div className="w-100">
+            <Button onClick={handleSubmit} className="w-100" variant="success">
+              Finish
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal>
     </>
